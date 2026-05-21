@@ -42,6 +42,95 @@ body::before {
   mix-blend-mode: screen;
   z-index: 0;
 }
+
+/* ══════════════ SPLASH SCREEN ══════════════ */
+#splash {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: rgba(0,0,0,0.96);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: splashFadeOut 0.6s ease 10s forwards;
+}
+@keyframes splashFadeOut {
+  0%   { opacity: 1; pointer-events: all; }
+  100% { opacity: 0; pointer-events: none; visibility: hidden; }
+}
+.splash-img-wrap {
+  position: relative;
+  max-width: min(88vw, 720px);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 2px rgba(255,60,0,0.55),
+    0 0 60px rgba(255,60,0,0.50),
+    0 0 120px rgba(255,30,0,0.30),
+    0 32px 80px rgba(0,0,0,0.80);
+  animation: splashGlow 2s ease-in-out infinite alternate;
+}
+@keyframes splashGlow {
+  from { box-shadow: 0 0 0 2px rgba(255,60,0,0.55), 0 0 60px rgba(255,60,0,0.50), 0 0 120px rgba(255,30,0,0.25), 0 32px 80px rgba(0,0,0,0.80); }
+  to   { box-shadow: 0 0 0 3px rgba(255,100,0,0.80), 0 0 90px rgba(255,80,0,0.75), 0 0 180px rgba(255,50,0,0.45), 0 32px 80px rgba(0,0,0,0.80); }
+}
+#splash-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 72vh;
+  object-fit: contain;
+  border-radius: 20px;
+}
+.splash-bar-wrap {
+  margin-top: 24px;
+  width: min(88vw, 720px);
+  height: 4px;
+  background: rgba(255,255,255,0.10);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.splash-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #ff3b1f, #ffd54a);
+  border-radius: 4px;
+  animation: barFill 10s linear forwards;
+}
+@keyframes barFill {
+  from { width: 0%; }
+  to   { width: 100%; }
+}
+.splash-label {
+  margin-top: 14px;
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.45);
+  letter-spacing: 0.5px;
+}
+.splash-skip {
+  margin-top: 18px;
+  padding: 8px 22px;
+  border-radius: 50px;
+  border: 1.5px solid rgba(255,60,0,0.45);
+  background: rgba(180,20,0,0.25);
+  color: rgba(255,255,255,0.65);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .18s;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+.splash-skip:hover {
+  border-color: rgba(255,80,0,0.80);
+  color: #fff;
+  background: rgba(200,30,0,0.40);
+}
+
 /* LANG TOGGLE */
 .lang-toggle {
   position: fixed;
@@ -75,6 +164,7 @@ body::before {
   border-color: rgba(255,255,255,0.40);
   color: #fff;
 }
+
 /* HEADER */
 .header {
   position: relative;
@@ -102,6 +192,12 @@ body::before {
   background-clip: text;
   text-shadow: none;
   margin: 0 0 8px;
+  animation: glowPulse 3.5s ease-in-out infinite;
+}
+@keyframes glowPulse {
+  0%  { filter: drop-shadow(0 0 6px rgba(255,80,0,0.30)); }
+  50% { filter: drop-shadow(0 0 18px rgba(255,100,0,0.55)); }
+  100%{ filter: drop-shadow(0 0 6px rgba(255,80,0,0.30)); }
 }
 .page-subtitle {
   font-size: clamp(13px, 2.5vw, 16px);
@@ -128,11 +224,10 @@ body::before {
   letter-spacing: 0.3px;
   border: 1.5px solid;
   white-space: nowrap;
-  cursor: pointer;
+  cursor: default;
   transition: transform .18s, box-shadow .18s;
   text-decoration: none;
 }
-.badge:hover { transform: scale(1.05); }
 .badge-count {
   background: linear-gradient(135deg, rgba(255,30,0,0.18), rgba(255,80,0,0.10));
   border-color: rgba(255,60,0,0.50);
@@ -147,6 +242,27 @@ body::before {
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(255,60,0,0.45) 30%, rgba(255,60,0,0.45) 70%, transparent);
 }
+
+/* LOADING STATE */
+.grid-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 0;
+  gap: 12px;
+  color: rgba(255,255,255,0.40);
+  font-size: 14px;
+  font-weight: 600;
+}
+.spinner {
+  width: 22px; height: 22px;
+  border: 2.5px solid rgba(255,60,0,0.20);
+  border-top-color: rgba(255,60,0,0.80);
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
 /* GRID */
 .grid-container {
   position: relative;
@@ -169,6 +285,7 @@ body::before {
 @media (max-width: 360px) {
   .grid { grid-template-columns: 1fr 1fr; gap: 6px; }
 }
+
 /* CARD */
 .media-card {
   position: relative;
@@ -215,21 +332,49 @@ body::before {
   transition: opacity .18s; pointer-events: none;
 }
 .media-card:hover .card-zoom-icon { opacity: 1; }
-.media-card:nth-child(1){animation-delay:.03s} .media-card:nth-child(2){animation-delay:.06s}
-.media-card:nth-child(3){animation-delay:.09s} .media-card:nth-child(4){animation-delay:.12s}
-.media-card:nth-child(5){animation-delay:.15s} .media-card:nth-child(6){animation-delay:.18s}
-.media-card:nth-child(7){animation-delay:.21s} .media-card:nth-child(8){animation-delay:.24s}
-.media-card:nth-child(9){animation-delay:.27s} .media-card:nth-child(10){animation-delay:.30s}
-.media-card:nth-child(11){animation-delay:.33s} .media-card:nth-child(12){animation-delay:.36s}
-.media-card:nth-child(13){animation-delay:.39s} .media-card:nth-child(14){animation-delay:.42s}
-.media-card:nth-child(15){animation-delay:.45s} .media-card:nth-child(16){animation-delay:.48s}
-.media-card:nth-child(17){animation-delay:.51s} .media-card:nth-child(18){animation-delay:.54s}
-.media-card:nth-child(19){animation-delay:.57s} .media-card:nth-child(20){animation-delay:.60s}
-.media-card:nth-child(21){animation-delay:.63s} .media-card:nth-child(22){animation-delay:.66s}
-.media-card:nth-child(23){animation-delay:.69s} .media-card:nth-child(24){animation-delay:.72s}
-.media-card:nth-child(25){animation-delay:.75s} .media-card:nth-child(26){animation-delay:.78s}
-.media-card:nth-child(27){animation-delay:.81s} .media-card:nth-child(28){animation-delay:.84s}
+
+/* CARD FEATURED (photo_24 - prima posizione) */
+.media-card.featured {
+  border-color: rgba(255,180,0,0.70) !important;
+  box-shadow:
+    0 0 0 2px rgba(255,200,0,0.40),
+    0 0 30px rgba(255,160,0,0.55),
+    0 0 60px rgba(255,100,0,0.30),
+    0 8px 28px rgba(0,0,0,0.55) !important;
+  animation: featuredGlow 2.5s ease-in-out infinite alternate, fadeUp .4s ease both !important;
+}
+@keyframes featuredGlow {
+  from {
+    box-shadow:
+      0 0 0 2px rgba(255,200,0,0.40),
+      0 0 30px rgba(255,160,0,0.55),
+      0 0 60px rgba(255,100,0,0.25),
+      0 8px 28px rgba(0,0,0,0.55);
+    border-color: rgba(255,180,0,0.70);
+  }
+  to {
+    box-shadow:
+      0 0 0 3px rgba(255,220,0,0.70),
+      0 0 50px rgba(255,200,0,0.80),
+      0 0 100px rgba(255,140,0,0.50),
+      0 8px 28px rgba(0,0,0,0.55);
+    border-color: rgba(255,220,0,1.0);
+  }
+}
+.media-card.featured:hover {
+  transform: translateY(-6px) scale(1.030);
+}
+.card-featured-badge {
+  position: absolute; top: 7px; right: 8px;
+  background: linear-gradient(135deg, rgba(255,180,0,0.90), rgba(255,100,0,0.85));
+  border-radius: 8px; padding: 3px 8px; font-size: 10px; font-weight: 900;
+  color: #fff; letter-spacing: 0.4px; pointer-events: none;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.50);
+  box-shadow: 0 2px 8px rgba(255,140,0,0.50);
+}
+
 @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
 /* LIGHTBOX */
 #lightbox {
   display: none; position: fixed; inset: 0; z-index: 9999;
@@ -278,12 +423,6 @@ body::before {
   position: absolute; bottom: -36px; left: 50%; transform: translateX(-50%);
   font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.45); white-space: nowrap;
 }
-@keyframes glowPulse {
-  0%  { text-shadow: 0 0 20px rgba(255,80,0,0.30); }
-  50% { text-shadow: 0 0 40px rgba(255,100,0,0.55), 0 0 80px rgba(255,60,0,0.20); }
-  100%{ text-shadow: 0 0 20px rgba(255,80,0,0.30); }
-}
-.page-title { animation: glowPulse 3.5s ease-in-out infinite; }
 .footer {
   position: relative; z-index: 1; text-align: center; padding-bottom: 32px;
   font-size: 12px; color: rgba(255,255,255,0.22); font-weight: 600; letter-spacing: 0.5px;
@@ -291,6 +430,20 @@ body::before {
 </style>
 </head>
 <body>
+
+<!-- SPLASH SCREEN -->
+<div id="splash">
+  <div class="splash-img-wrap">
+    <img id="splash-img"
+      src="https://raw.githubusercontent.com/ArmatarozzaCR/revenge2easy/main/photo_24_2026-05-21_14-10-20.jpg"
+      alt="Foto in evidenza"
+      width="720" height="450"
+    />
+  </div>
+  <div class="splash-bar-wrap"><div class="splash-bar"></div></div>
+  <div class="splash-label" id="splash-label">Apertura tra 10 secondi…</div>
+  <button class="splash-skip" onclick="closeSplash()">Vai alla galleria ›</button>
+</div>
 
 <!-- TOGGLE LINGUA -->
 <div class="lang-toggle">
@@ -306,7 +459,7 @@ body::before {
       <p class="page-subtitle" id="subtitle">Le prove non mentono. Ogni screenshot racconta come è andata davvero.</p>
     </div>
     <div class="header-badges">
-      <span class="badge badge-count" id="badge-count">📸 28 prove</span>
+      <span class="badge badge-count" id="badge-count">📸 — prove</span>
     </div>
   </div>
 </header>
@@ -314,6 +467,10 @@ body::before {
 
 <!-- GRID -->
 <main class="grid-container">
+  <div id="grid-loading" class="grid-loading">
+    <div class="spinner"></div>
+    <span id="loading-text">Caricamento foto…</span>
+  </div>
   <div class="grid" id="grid"></div>
 </main>
 
@@ -331,96 +488,202 @@ body::before {
 </div>
 
 <script>
-// ✅ URL CORRETTO — punta direttamente al repo revenge2easy
-const BASE = "https://raw.githubusercontent.com/ArmatarozzaCR/revenge2easy/main/";
+// ══════════════════════════════════════════
+//  CONFIG
+// ══════════════════════════════════════════
+const OWNER  = "ArmatarozzaCR";
+const REPO   = "revenge2easy";
+const BRANCH = "main";
+const RAW    = `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/`;
+const API    = `https://api.github.com/repos/${OWNER}/${REPO}/contents?ref=${BRANCH}`;
 
-const FILES = [
-  "photo_1_2026-05-21_14-10-20.jpg","photo_2_2026-05-21_14-10-20.jpg",
-  "photo_3_2026-05-21_14-10-20.jpg","photo_4_2026-05-21_14-10-20.jpg",
-  "photo_5_2026-05-21_14-10-20.jpg","photo_6_2026-05-21_14-10-20.jpg",
-  "photo_7_2026-05-21_14-10-20.jpg","photo_8_2026-05-21_14-10-20.jpg",
-  "photo_9_2026-05-21_14-10-20.jpg","photo_10_2026-05-21_14-10-20.jpg",
-  "photo_11_2026-05-21_14-10-20.jpg","photo_12_2026-05-21_14-10-20.jpg",
-  "photo_13_2026-05-21_14-10-20.jpg","photo_14_2026-05-21_14-10-20.jpg",
-  "photo_15_2026-05-21_14-10-20.jpg","photo_16_2026-05-21_14-10-20.jpg",
-  "photo_17_2026-05-21_14-10-20.jpg","photo_18_2026-05-21_14-10-20.jpg",
-  "photo_19_2026-05-21_14-10-20.jpg","photo_20_2026-05-21_14-10-20.jpg",
-  "photo_21_2026-05-21_14-10-20.jpg","photo_22_2026-05-21_14-10-20.jpg",
-  "photo_23_2026-05-21_14-10-20.jpg","photo_24_2026-05-21_14-10-20.jpg",
-  "photo_25_2026-05-21_14-10-20.jpg","photo_26_2026-05-21_14-10-20.jpg",
-  "photo_27_2026-05-21_14-10-20.jpg","photo_28_2026-05-21_14-10-20.jpg",
-];
+// La foto che va in primo piano (splash + prima posizione + glow)
+const FEATURED_PHOTO = "photo_24_2026-05-21_14-10-20.jpg";
 
+// ══════════════════════════════════════════
+//  SPLASH
+// ══════════════════════════════════════════
+let splashTimer = null;
+const splashEl = document.getElementById("splash");
+
+function closeSplash() {
+  clearTimeout(splashTimer);
+  clearInterval(countdownInterval);
+  splashEl.style.animation = "none";
+  splashEl.style.opacity = "0";
+  splashEl.style.transition = "opacity .5s ease";
+  splashEl.style.pointerEvents = "none";
+  setTimeout(() => { splashEl.style.visibility = "hidden"; }, 500);
+}
+
+let countdown = 10;
+const splashLabel = document.getElementById("splash-label");
+const countdownInterval = setInterval(() => {
+  countdown--;
+  if (countdown <= 0) {
+    clearInterval(countdownInterval);
+    splashLabel.textContent = "";
+  } else {
+    splashLabel.textContent = `Apertura tra ${countdown} second${countdown === 1 ? "o" : "i"}…`;
+  }
+}, 1000);
+
+splashTimer = setTimeout(closeSplash, 10000);
+
+// ══════════════════════════════════════════
+//  TRADUZIONI
+// ══════════════════════════════════════════
 const TRANSLATIONS = {
   it: {
-    subtitle: "Le prove non mentono. Ogni screenshot racconta come è andata davvero.",
-    badgeCount: "📸 28 prove",
-    imgAlt: "Prova",
-    counter: (i, tot) => `${i} / ${tot}`,
-    footer: "ARMATA ROZZA © 2025",
+    subtitle:      "Le prove non mentono. Ogni screenshot racconta come è andata davvero.",
+    badgeCount:    (n) => `📸 ${n} prove`,
+    imgAlt:        "Prova",
+    counter:       (i, tot) => `${i} / ${tot}`,
+    footer:        "ARMATA ROZZA © 2025",
+    loading:       "Caricamento foto…",
+    featuredBadge: "⭐ TOP",
   },
   ru: {
-    subtitle: "Доказательства не лгут. Каждый скриншот рассказывает, как всё было на самом деле.",
-    badgeCount: "📸 28 доказательств",
-    imgAlt: "Доказательство",
-    counter: (i, tot) => `${i} из ${tot}`,
-    footer: "ARMATA ROZZA © 2025",
+    subtitle:      "Доказательства не лгут. Каждый скриншот рассказывает, как всё было на самом деле.",
+    badgeCount:    (n) => `📸 ${n} доказательств`,
+    imgAlt:        "Доказательство",
+    counter:       (i, tot) => `${i} из ${tot}`,
+    footer:        "ARMATA ROZZA © 2025",
+    loading:       "Загрузка фото…",
+    featuredBadge: "⭐ ТОП",
   }
 };
 
-let currentLang = 'it';
-let currentIdx = 0;
+let currentLang = "it";
+let currentIdx  = 0;
+let FILES       = [];
 
+// ══════════════════════════════════════════
+//  FETCH PHOTOS FROM GITHUB API
+// ══════════════════════════════════════════
+async function fetchPhotos() {
+  try {
+    const res  = await fetch(API);
+    if (!res.ok) throw new Error("API error " + res.status);
+    const data = await res.json();
+
+    let photos = data
+      .filter(f => f.type === "file" && /\.(jpg|jpeg|png|webp)$/i.test(f.name))
+      .map(f => f.name);
+
+    const featured = photos.filter(p => p === FEATURED_PHOTO);
+    const rest     = photos.filter(p => p !== FEATURED_PHOTO)
+      .sort((a, b) => {
+        const na = parseInt(a.match(/\d+/) || [0], 10);
+        const nb = parseInt(b.match(/\d+/) || [0], 10);
+        return na - nb;
+      });
+
+    FILES = [...featured, ...rest];
+    buildGrid();
+  } catch (err) {
+    console.error("Fetch error:", err);
+    fallbackBuild();
+  }
+}
+
+function fallbackBuild() {
+  const known = 28;
+  const arr = [];
+  const suffix = "_2026-05-21_14-10-20.jpg";
+  for (let i = 1; i <= known; i++) arr.push(`photo_${i}${suffix}`);
+  const featured = arr.filter(p => p === FEATURED_PHOTO);
+  const rest = arr.filter(p => p !== FEATURED_PHOTO);
+  FILES = [...featured, ...rest];
+  buildGrid();
+}
+
+// ══════════════════════════════════════════
+//  BUILD GRID
+// ══════════════════════════════════════════
+function buildGrid() {
+  const loadingEl = document.getElementById("grid-loading");
+  const grid = document.getElementById("grid");
+
+  loadingEl.style.display = "none";
+
+  const t = TRANSLATIONS[currentLang];
+  document.getElementById("badge-count").textContent = t.badgeCount(FILES.length);
+
+  grid.innerHTML = "";
+
+  FILES.forEach((file, i) => {
+    const isFeatured = (file === FEATURED_PHOTO);
+    const card = document.createElement("div");
+    card.className = "media-card" + (isFeatured ? " featured" : "");
+    card.style.animationDelay = `${Math.min(i * 0.03, 0.6)}s`;
+    card.onclick = () => openLB(i);
+
+    const img = document.createElement("img");
+    img.src = RAW + file;
+    img.alt = `${t.imgAlt} ${i + 1}`;
+    img.loading = i < 6 ? "eager" : "lazy";
+    img.decoding = "async";
+    img.width  = 480;
+    img.height = 300;
+
+    const num = document.createElement("span");
+    num.className = "card-num";
+    num.textContent = i + 1;
+
+    if (isFeatured) {
+      const badge = document.createElement("span");
+      badge.className = "card-featured-badge";
+      badge.textContent = t.featuredBadge;
+      card.appendChild(badge);
+    } else {
+      const zoom = document.createElement("span");
+      zoom.className = "card-zoom-icon";
+      zoom.textContent = "🔍";
+      card.appendChild(zoom);
+    }
+
+    card.appendChild(img);
+    card.appendChild(num);
+    grid.appendChild(card);
+  });
+}
+
+// ══════════════════════════════════════════
+//  TRADUZIONI DINAMICHE
+// ══════════════════════════════════════════
 function setLang(lang) {
   currentLang = lang;
   const t = TRANSLATIONS[lang];
-  document.getElementById('subtitle').textContent = t.subtitle;
-  document.getElementById('badge-count').textContent = t.badgeCount;
-  document.getElementById('footer').textContent = t.footer;
-  document.querySelectorAll('.media-card img').forEach((img, i) => {
+  document.getElementById("subtitle").textContent = t.subtitle;
+  document.getElementById("badge-count").textContent = t.badgeCount(FILES.length);
+  document.getElementById("footer").textContent = t.footer;
+  document.getElementById("loading-text").textContent = t.loading;
+  document.querySelectorAll(".media-card img").forEach((img, i) => {
     img.alt = `${t.imgAlt} ${i + 1}`;
   });
-  const lbCnt = document.getElementById('lb-counter');
+  document.querySelectorAll(".card-featured-badge").forEach(el => {
+    el.textContent = t.featuredBadge;
+  });
+  const lbCnt = document.getElementById("lb-counter");
   if (lbCnt.textContent) lbCnt.textContent = t.counter(currentIdx + 1, FILES.length);
-  document.getElementById('btn-it').classList.toggle('active', lang === 'it');
-  document.getElementById('btn-ru').classList.toggle('active', lang === 'ru');
-  document.documentElement.lang = lang === 'ru' ? 'ru' : 'it';
+  document.getElementById("btn-it").classList.toggle("active", lang === "it");
+  document.getElementById("btn-ru").classList.toggle("active", lang === "ru");
+  document.documentElement.lang = lang === "ru" ? "ru" : "it";
 }
 
-// Build grid
-const grid = document.getElementById("grid");
-FILES.forEach((file, i) => {
-  const card = document.createElement("div");
-  card.className = "media-card";
-  card.onclick = () => openLB(i);
-  const img = document.createElement("img");
-  img.src = BASE + file;
-  img.alt = `Prova ${i + 1}`;
-  img.loading = "lazy";
-  img.decoding = "async";
-  img.width = 480;
-  img.height = 300;
-  const num = document.createElement("span");
-  num.className = "card-num";
-  num.textContent = i + 1;
-  const zoom = document.createElement("span");
-  zoom.className = "card-zoom-icon";
-  zoom.textContent = "🔍";
-  card.appendChild(img);
-  card.appendChild(num);
-  card.appendChild(zoom);
-  grid.appendChild(card);
-});
-
-// Lightbox
+// ══════════════════════════════════════════
+//  LIGHTBOX
+// ══════════════════════════════════════════
 const lb    = document.getElementById("lightbox");
 const lbImg = document.getElementById("lb-img");
 const lbCnt = document.getElementById("lb-counter");
+lbImg.style.transition = "opacity .12s ease, transform .12s ease";
 
 function openLB(idx) {
   currentIdx = idx;
   const t = TRANSLATIONS[currentLang];
-  lbImg.src = BASE + FILES[idx];
+  lbImg.src = RAW + FILES[idx];
   lbImg.alt = `${t.imgAlt} ${idx + 1}`;
   lbCnt.textContent = t.counter(idx + 1, FILES.length);
   lb.classList.add("visible");
@@ -437,14 +700,13 @@ function navLB(dir) {
   lbImg.style.opacity = "0";
   lbImg.style.transform = "scale(0.94)";
   setTimeout(() => {
-    lbImg.src = BASE + FILES[currentIdx];
+    lbImg.src = RAW + FILES[currentIdx];
     lbImg.alt = `${t.imgAlt} ${currentIdx + 1}`;
     lbCnt.textContent = t.counter(currentIdx + 1, FILES.length);
     lbImg.style.opacity = "1";
     lbImg.style.transform = "scale(1)";
   }, 120);
 }
-lbImg.style.transition = "opacity .12s ease, transform .12s ease";
 
 document.addEventListener("keydown", e => {
   if (!lb.classList.contains("visible")) return;
@@ -460,7 +722,12 @@ lb.addEventListener("touchend", e => {
   if (Math.abs(dx) > 50) navLB(dx < 0 ? 1 : -1);
 });
 
-document.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener("contextmenu", e => e.preventDefault());
+
+// ══════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════
+fetchPhotos();
 </script>
 </body>
 </html>
